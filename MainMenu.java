@@ -1,5 +1,3 @@
-// Christopher Townsend, CS 321 Team 5 Group Project
-
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.event.*;
