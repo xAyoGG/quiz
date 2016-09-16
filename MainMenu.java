@@ -132,7 +132,6 @@ public class MainMenu extends JFrame implements ActionListener {
 		
 		btnFilePath = new JButton("File path");
 		filePanel.add(btnFilePath);
-		String path = ".\\quiz.txt";
 		btnFilePath.addActionListener(this);
 		
 			// File path display
