@@ -118,7 +118,7 @@ public class MainMenu extends JFrame implements ActionListener {
 		subMenu.add(btnWordAdd);
 		btnWordAdd.addActionListener(this);
 		
-		btnReturn = new JButton("Finish");
+		btnReturn = new JButton("Return");
 		btnReturn.setBounds(221, 136, 97, 31);
 		subMenu.add(btnReturn);
 		btnReturn.addActionListener(this);
