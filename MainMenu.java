@@ -20,15 +20,15 @@ public class MainMenu extends JFrame implements ActionListener {
 	private JButton btnCreateQuiz;					// Create Quiz button
 	private JButton btnModifyQuiz;					// Modify Quiz button
 	
-	// sub menu items
-	private JPanel subMenu;							// sub-menu panel
+	// word panel items
+	private JPanel wordPanel;						// Word panel
 	private JTextField word;						// Field to hold word
 	private JTextField def;							// Field to hold definition
 	private JButton	btnWordAdd;						// Add Word button
-	private JButton btnReturn;						// Finish button to hide sub-menu
+	private JButton btnReturn;						// Return to button panel
 	
 	// file panel items
-	private JPanel filePanel;						// file menu panel
+	private JPanel filePanel;						// File panel
 	private JButton btnFilePath;					// File path button
 	private JFileChooser fc = new JFileChooser();	// File chooser object
 	private JTextField filepath;					// file path of quiz
@@ -113,42 +113,42 @@ public class MainMenu extends JFrame implements ActionListener {
 		buttonPanel.add(btnModifyQuiz);
 		btnModifyQuiz.addActionListener(this);
 		
-		// Sub-menu for create / modify quiz (CENTER)
+		// Quiz words create / modify (CENTER)
 		
-		subMenu = new JPanel();
-		subMenu.setVisible(false);
-		subMenu.setBounds(0, 0, 446, 195);
-		center.add(subMenu);
-		subMenu.setLayout(null);
+		wordPanel = new JPanel();
+		wordPanel.setVisible(false);
+		wordPanel.setBounds(0, 0, 446, 195);
+		center.add(wordPanel);
+		wordPanel.setLayout(null);
 		
 		JLabel lblword = new JLabel("Word: ");
 		lblword.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblword.setBounds(48, 33, 52, 14);
-		subMenu.add(lblword);
+		wordPanel.add(lblword);
 		
 		word = new JTextField();
 		word.setBounds(110, 30, 208, 20);
-		subMenu.add(word);
+		wordPanel.add(word);
 		word.setColumns(18);
 		
 		JLabel lblDefinition = new JLabel("Definition: ");
 		lblDefinition.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblDefinition.setBounds(28, 58, 72, 14);
-		subMenu.add(lblDefinition);
+		wordPanel.add(lblDefinition);
 		
 		def = new JTextField();
 		def.setBounds(110, 61, 208, 64);
-		subMenu.add(def);
+		wordPanel.add(def);
 		def.setColumns(18);
 		
 		btnWordAdd = new JButton("Add word");
 		btnWordAdd.setBounds(110, 136, 101, 31);
-		subMenu.add(btnWordAdd);
+		wordPanel.add(btnWordAdd);
 		btnWordAdd.addActionListener(this);
 		
 		btnReturn = new JButton("Return");
 		btnReturn.setBounds(221, 136, 97, 31);
-		subMenu.add(btnReturn);
+		wordPanel.add(btnReturn);
 		btnReturn.addActionListener(this);
 		
 		// Bottom panel
@@ -209,6 +209,7 @@ public class MainMenu extends JFrame implements ActionListener {
 		rg.add(radio4);
 		
 		btnNext = new JButton("Next");
+		btnNext.setEnabled(false);
 		quizPanel.add(btnNext);
 		btnNext.addActionListener(this);
 		
@@ -224,7 +225,7 @@ public class MainMenu extends JFrame implements ActionListener {
 		// add panels to center panel
 		
         center.add(buttonPanel);
-        center.add(subMenu);
+        center.add(wordPanel);
         center.add(quizPanel);
         
 	}
@@ -234,7 +235,7 @@ public class MainMenu extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == btnStartQuiz) {					// Start Quiz
 			buttonPanel.setVisible(false);
-			subMenu.setVisible(false);
+			wordPanel.setVisible(false);
 			quizPanel.setVisible(true);
 			filePanel.setVisible(false);
 			infoPanel.setVisible(true);
@@ -242,12 +243,12 @@ public class MainMenu extends JFrame implements ActionListener {
 		}
 		if(e.getSource() == btnCreateQuiz || e.getSource() == btnModifyQuiz) {
 			buttonPanel.setVisible(false);
-			subMenu.setVisible(true);					// sub-menu 'opened'
+			wordPanel.setVisible(true);					// word panel 'opened'
 			btnFilePath.setEnabled(false);
-			if(e.getSource() == btnModifyQuiz) {			// Modify Quiz 
-				//...
+			if(e.getSource() == btnModifyQuiz) {		// Modify Quiz 
+				//..
 			}
-			else {											// Create new Quiz
+			else {										// Create new Quiz
 				//...
 			}
 		}
@@ -266,9 +267,12 @@ public class MainMenu extends JFrame implements ActionListener {
 			//...
 		}
 		if(e.getSource() == btnReturn) {					// Return to main menu [works]
-			subMenu.setVisible(false);
+			wordPanel.setVisible(false);
 			btnFilePath.setEnabled(true);
 			buttonPanel.setVisible(true);
+		}
+		if(e.getSource() == radio1 || e.getSource() == radio2 || e.getSource() == radio3 || e.getSource() == radio4) {
+			btnNext.setEnabled(true);
 		}
 		if(e.getSource() == btnNext && (radio1.isSelected() || radio2.isSelected() || radio3.isSelected() || radio4.isSelected())) {						// Quiz Next button
 			String s = "";
@@ -285,6 +289,7 @@ public class MainMenu extends JFrame implements ActionListener {
 				s = radio4.getText();
 			}
 			rg.clearSelection();
+			btnNext.setEnabled(false);
 			System.out.println("You chose " + s);
 			//...
 		}
