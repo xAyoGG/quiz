@@ -4,6 +4,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
+import java.io.IOException;
 import java.awt.*;
 
 public class MainMenu extends JFrame implements ActionListener {
@@ -13,12 +14,15 @@ public class MainMenu extends JFrame implements ActionListener {
 	private File file;								// file object
 	private JPanel center;							// center panel (CENTER)
 	private JPanel bottom;							// bottom panel (BOTTOM)
+	private int enteredQuestions;					// -User supplied- number of questions to use
+	private int numQuestions;						// The length of the list or number of actual questions
 	
 	// button panel items 
 	private JPanel buttonPanel;						// Button panel
 	private JButton btnStartQuiz;					// Start Quiz button
 	private JButton btnCreateQuiz;					// Create Quiz button
 	private JButton btnModifyQuiz;					// Modify Quiz button
+	private JTextField txtQuestions;				// Number of questions
 	
 	// word panel items
 	private JPanel wordPanel;						// Word panel
@@ -31,11 +35,11 @@ public class MainMenu extends JFrame implements ActionListener {
 	private JPanel filePanel;						// File panel
 	private JButton btnFilePath;					// File path button
 	private JFileChooser fc = new JFileChooser();	// File chooser object
-	private JTextField filepath;					// file path of quiz
+	private JTextField txtfilepath;					// file path of quiz
 	
 	// quiz panel items --
 	private JPanel quizPanel;						// quiz interface panel
-	private JLabel question;
+	private JLabel lblquestion;
 	private JRadioButton radio1;					
 	private JRadioButton radio2;
 	private JRadioButton radio4;
@@ -71,7 +75,7 @@ public class MainMenu extends JFrame implements ActionListener {
 		// Main Menu Window
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
+		setBounds(450, 450, 450, 300);
 		contentPane = new JPanel();
 		setContentPane(contentPane);
 		BorderLayout borders = new BorderLayout(5, 5);
@@ -81,7 +85,7 @@ public class MainMenu extends JFrame implements ActionListener {
 		
 		JPanel titlePanel = new JPanel();
 		JLabel titleLabel = new JLabel("Vocabulary Quiz");
-		titleLabel.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		titleLabel.setFont(new Font("Ravie", Font.PLAIN, 22));
 		titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		titlePanel.add(titleLabel);
 		contentPane.add(titlePanel,BorderLayout.NORTH);
@@ -99,22 +103,32 @@ public class MainMenu extends JFrame implements ActionListener {
 		buttonPanel.setLayout(null);
 		
 		btnStartQuiz = new JButton("Start Quiz");
-		btnStartQuiz.setBounds(159, 37, 117, 29);
+		btnStartQuiz.setBounds(159, 27, 117, 29);
 		buttonPanel.add(btnStartQuiz);
 		btnStartQuiz.addActionListener(this);
 		
 		btnCreateQuiz = new JButton("Create Quiz");
-		btnCreateQuiz.setBounds(159, 77, 117, 29);
+		btnCreateQuiz.setBounds(159, 67, 117, 29);
 		buttonPanel.add(btnCreateQuiz);
 		btnCreateQuiz.addActionListener(this);
 		
 		btnModifyQuiz = new JButton("Modify Quiz");
-		btnModifyQuiz.setBounds(159, 117, 117, 29);
+		btnModifyQuiz.setBounds(159, 107, 117, 29);
 		buttonPanel.add(btnModifyQuiz);
 		btnModifyQuiz.addActionListener(this);
 		
-		// Quiz words create / modify (CENTER)
+		JLabel lblQuestions = new JLabel("Number of Questions:");
+        lblQuestions.setBounds(125, 158, 151, 22);
+        buttonPanel.add(lblQuestions);
 		
+		txtQuestions = new JTextField("all");
+		txtQuestions.setBounds(254, 154, 30, 30);
+		buttonPanel.add(txtQuestions);
+		txtQuestions.addActionListener(this);
+		
+		
+		// Quiz words create / modify (CENTER)
+	
 		wordPanel = new JPanel();
 		wordPanel.setVisible(false);
 		wordPanel.setBounds(0, 0, 446, 195);
@@ -170,10 +184,10 @@ public class MainMenu extends JFrame implements ActionListener {
 		
 			// File path display
 		
-		filepath = new JTextField();
-		filepath.setColumns(25);
-		filePanel.add(filepath);
-		filepath.setText(".\\quiz.txt");
+		txtfilepath = new JTextField();
+		txtfilepath.setColumns(25);
+		filePanel.add(txtfilepath);
+		txtfilepath.setText(".\\quiz.txt");
 		
 		// Quiz panel (CENTER)
 		
@@ -182,9 +196,9 @@ public class MainMenu extends JFrame implements ActionListener {
 		center.add(quizPanel);
 		quizPanel.setLayout(new GridLayout(6, 1, 0, 0));
 		
-		question = new JLabel("Question");
-		question.setHorizontalAlignment(SwingConstants.CENTER);
-		quizPanel.add(question);
+		lblquestion = new JLabel("Question");
+		lblquestion.setHorizontalAlignment(SwingConstants.CENTER);
+		quizPanel.add(lblquestion);
 		
 		radio1 = new JRadioButton("radio1");
 		quizPanel.add(radio1);
@@ -219,14 +233,15 @@ public class MainMenu extends JFrame implements ActionListener {
 		infoPanel.setVisible(false);
 		bottom.add(infoPanel);
 		
-		infoLabel = new JLabel(filepath.getText() + ":: Question: X/Y");
+		infoLabel = new JLabel(txtfilepath.getText() + ":: Question: X/Y");
 		infoPanel.add(infoLabel);
 		
 		// add panels to center panel
 		
-        center.add(buttonPanel);
-        center.add(wordPanel);
+		center.add(buttonPanel);
+		center.add(wordPanel);
         center.add(quizPanel);
+        
         
 	}
 	
@@ -249,17 +264,26 @@ public class MainMenu extends JFrame implements ActionListener {
 				//..
 			}
 			else {										// Create new Quiz
+				if(file.exists()) {
+					file.delete();
+				}
+				try {
+					file.createNewFile();
+				} catch (IOException ioe) {
+					ioe.printStackTrace();
+				}
 				//...
 			}
 		}
 		if(e.getSource() == btnFilePath) {					// Select File [works]
-			FileNameExtensionFilter filter = new FileNameExtensionFilter("text document", "txt");
+			String[] ft = {"txt"};	// String array of acceptable filetypes
+			FileNameExtensionFilter filter = new FileNameExtensionFilter("text document", ft);
 			fc.setFileFilter(filter);
 			int returnVal = fc.showOpenDialog(this);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				file = fc.getSelectedFile();
 				path = file.getAbsolutePath();
-				filepath.setText(path);
+				txtfilepath.setText(path);
 			}
 		}
 		if(e.getSource() == btnWordAdd) {					// Add word
@@ -274,7 +298,7 @@ public class MainMenu extends JFrame implements ActionListener {
 		if(e.getSource() == radio1 || e.getSource() == radio2 || e.getSource() == radio3 || e.getSource() == radio4) {
 			btnNext.setEnabled(true);
 		}
-		if(e.getSource() == btnNext && (radio1.isSelected() || radio2.isSelected() || radio3.isSelected() || radio4.isSelected())) {						// Quiz Next button
+		if(e.getSource() == btnNext) {						// Quiz Next button
 			String s = "";
 			if(radio1.isSelected()) {
 				s = radio1.getText();
@@ -292,6 +316,23 @@ public class MainMenu extends JFrame implements ActionListener {
 			btnNext.setEnabled(false);
 			System.out.println("You chose " + s);
 			//...
+		}
+		if(e.getSource() == txtQuestions) {				// Quiz questions selection 
+			String s = txtQuestions.getText();
+			try {
+				enteredQuestions = Integer.valueOf(s);
+			}
+			catch(NumberFormatException nfe) {			// disables btnStartQuiz if it can't parse the text to integer
+				btnStartQuiz.setEnabled(false);
+				return;
+			}
+			/*
+			if(enteredQuestions > numQuestions) {		// disable btnStartQuiz if enteredQuestions > numQuestions
+				btnStartQuiz.setEnabled(false);
+				return;
+			}
+			*/
+			btnStartQuiz.setEnabled(true);
 		}
 	}
 }
