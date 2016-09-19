@@ -6,7 +6,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.*;
 import java.util.Scanner;
 import java.awt.*;
-
+//testing -Allen
 public class MainMenu extends JFrame implements ActionListener {
 
 	private JPanel contentPane;						// Main Window
