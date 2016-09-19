@@ -3,15 +3,15 @@ import java.awt.EventQueue;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.util.Scanner;
 import java.awt.*;
 
 public class MainMenu extends JFrame implements ActionListener {
 
 	private JPanel contentPane;						// Main Window
 	private String path;							// file path
-	private File file;								// file object
+	private File file = new File("./quiz.txt");		// file object
 	private JPanel center;							// center panel (CENTER)
 	private JPanel bottom;							// bottom panel (BOTTOM)
 	private int enteredQuestions;					// -User supplied- number of questions to use
@@ -30,6 +30,9 @@ public class MainMenu extends JFrame implements ActionListener {
 	private JTextField def;							// Field to hold definition
 	private JButton	btnWordAdd;						// Add Word button
 	private JButton btnReturn;						// Return to button panel
+	private FileOutputStream ios;					//
+	private OutputStreamWriter osw;  				//
+    private Writer w;								//
 	
 	// file panel items
 	private JPanel filePanel;						// File panel
@@ -261,22 +264,43 @@ public class MainMenu extends JFrame implements ActionListener {
 			wordPanel.setVisible(true);					// word panel 'opened'
 			btnFilePath.setEnabled(false);
 			if(e.getSource() == btnModifyQuiz) {		// Modify Quiz 
-				//..
+				if(file.exists() && file.canWrite()) {
+					try {
+						ios = new FileOutputStream(file);
+						osw = new OutputStreamWriter(ios);  
+						w = new BufferedWriter(osw); 
+					} catch (FileNotFoundException fnfe) {
+						System.out.println("modify quiz 404 error");
+					}
+				}
+				//...
 			}
 			else {										// Create new Quiz
 				if(file.exists()) {
+					System.out.println("delete");
 					file.delete();
 				}
 				try {
+					System.out.println("create");
 					file.createNewFile();
 				} catch (IOException ioe) {
 					ioe.printStackTrace();
+				}
+				System.out.println(file.toString());
+				if(file.exists() && file.canRead() && file.canWrite()) {
+					try {
+						ios = new FileOutputStream(file);
+						osw = new OutputStreamWriter(ios);  
+						w = new BufferedWriter(osw); 
+					} catch (FileNotFoundException fnfe) {
+						System.out.println("create quiz 404 error");
+					}
 				}
 				//...
 			}
 		}
 		if(e.getSource() == btnFilePath) {					// Select File [works]
-			String[] ft = {"txt"};	// String array of acceptable filetypes
+			String[] ft = {"txt"};		// String array of acceptable filetypes
 			FileNameExtensionFilter filter = new FileNameExtensionFilter("text document", ft);
 			fc.setFileFilter(filter);
 			int returnVal = fc.showOpenDialog(this);
@@ -288,9 +312,19 @@ public class MainMenu extends JFrame implements ActionListener {
 		}
 		if(e.getSource() == btnWordAdd) {					// Add word
 			System.out.println("Add word " + word.getText() + ", definition " + def.getText());
+			try {
+	            w.append(word.getText() + " :" + def.getText());
+			} catch (IOException wae) {
+				System.out.println("write append error");
+			}
 			//...
 		}
 		if(e.getSource() == btnReturn) {					// Return to main menu [works]
+			try {
+				w.write(w.toString());
+			} catch (IOException ioe) {
+				System.out.println("writer io error");
+			}
 			wordPanel.setVisible(false);
 			btnFilePath.setEnabled(true);
 			buttonPanel.setVisible(true);
